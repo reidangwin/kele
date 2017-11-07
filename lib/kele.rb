@@ -25,6 +25,7 @@ class Kele
     raise "Invalid password" if @session_response.code == 401
 
     @auth_token = @session_response['auth_token']
+    @enrollment_id = @session_response['selected_enrollment_chain_id']
 
   end
 
@@ -61,5 +62,17 @@ class Kele
     }
 
     self.class.post(api_url("messages"), body: options, headers: {"authorization" => @auth_token})
+  end
+
+  def create_submission(checkpoint_id, assignment_branch, assignment_commit_link, comment)
+    options = {
+        'checkpoint_id': checkpoint_id,
+        'assignment_branch': assignment_branch,
+        'assignment_commit_link': assignment_commit_link,
+        'comment': comment,
+        'enrollment_id': @enrollment_id
+    }
+
+    self.class.post(api_url("checkpoint_submissions"), body: options, headers: {"authorization" => @auth_token})
   end
 end
